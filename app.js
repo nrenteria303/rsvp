@@ -136,7 +136,7 @@ function createLi(text) {
 window.onload = function() {
     if (supportsLocalStorage) {
 
-        // Initilize display list
+        // Initialize display list
         var recentInvitees = getRecentInvitees();
         recentInvitees.forEach(function(inviteeStr) {
             inviteeArray.push(inviteeStr);
@@ -190,6 +190,7 @@ ul.addEventListener('click', (e) => {
     if (button.tagName === 'BUTTON') {
         const li = button.parentNode;
         const name = li.firstChild.textContent;
+        // const oldName = name;
         const ul = li.parentNode;
         const action = button.textContent;
         const nameActions = {
@@ -222,12 +223,12 @@ ul.addEventListener('click', (e) => {
             save: () => {
                 const input = li.firstElementChild;
                 const newSpan = document.createElement('span');
-                // let invitees = getRecentInvitees();
+                // const liPosition = inviteeArray.indexOf(oldName);
+                inviteeArray.splice(inviteeArray.indexOf(name), 1, input.value); // inviteeArray.indexOf(name) is invalid
                 newSpan.textContent = input.value;
                 li.insertBefore(newSpan, input);
                 li.removeChild(input);
-                // invitees[0] = input.value;
-                // saveInviteeString(JSON.stringify(invitees));                
+                localStorage.setItem('recentInvitees', JSON.stringify(inviteeArray));             
                 button.textContent = 'edit';
             }
         }
