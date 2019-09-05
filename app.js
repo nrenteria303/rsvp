@@ -12,6 +12,8 @@ const filterNoCheckBox = document.getElementById('filter-no-checkbox');
 
 const clearBtn = document.getElementById('clear-btn');
 
+let inviteeIndex;
+
 let inviteeArray = [];
 let inviteeString= '';
 
@@ -182,15 +184,11 @@ ul.addEventListener('change', (e) => {
     }
 });
 
-// utilize this when checking box on windowload
-// lis[0].children[2].lastChild.checked = false
-
 ul.addEventListener('click', (e) => {
     const button = e.target;
     if (button.tagName === 'BUTTON') {
         const li = button.parentNode;
         const name = li.firstChild.textContent;
-        // const oldName = name;
         const ul = li.parentNode;
         const action = button.textContent;
         const nameActions = {
@@ -212,6 +210,7 @@ ul.addEventListener('click', (e) => {
 
             },
             edit: () => {
+                inviteeIndex = inviteeArray.indexOf(name);
                 const span = li.firstElementChild;
                 const input = document.createElement('input');
                 input.type = 'text';
@@ -223,8 +222,7 @@ ul.addEventListener('click', (e) => {
             save: () => {
                 const input = li.firstElementChild;
                 const newSpan = document.createElement('span');
-                // const liPosition = inviteeArray.indexOf(oldName);
-                inviteeArray.splice(inviteeArray.indexOf(name), 1, input.value); // inviteeArray.indexOf(name) is invalid
+                inviteeArray.splice(inviteeIndex, 1, input.value); // inviteeArray.indexOf(name) is invalid
                 newSpan.textContent = input.value;
                 li.insertBefore(newSpan, input);
                 li.removeChild(input);
