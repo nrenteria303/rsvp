@@ -157,56 +157,44 @@ window.onload = function() {
     }
 }
 
-// // Set event handlers
-// form.addEventListener('submit', (e) => {
-//     e.preventDefault();
-//     if (input.value == '' || input.value == ' ') {
-//         alert('Please enter an invitee name');
-//     } else {
-//         const text = input.value;
-//         input.value = '';
-
-//         if (saveInviteeString(text)) {
-//             const li = createLi(text);
-//             ul.appendChild(li);
-//         }
-//     }
-// });
-
 ul.addEventListener('change', (e) => {
     const checkbox = e.target;
-    const checkboxLabel = checkbox.parentNode;
-    const li = checkboxLabel.parentNode;
-    const name = li.firstChild.textContent;
-    const checked = checkbox.checked;
-    listItem = checkbox.parentNode.parentNode;
-    inviteeIndex = inviteeArray.indexOf(inviteeArray.find(function(obj) {return obj.name === name;}));
-
-    if (checked && checkboxLabel.textContent === "I'll be there") {
-        listItem.className = 'responded-yes';
-        checkboxLabel.nextElementSibling.style.display = 'none';
-        inviteeArray[inviteeIndex].isChecked = true;
-        inviteeArray[inviteeIndex].yes = true;
-    } else if (checked && checkboxLabel.textContent === "Can't make it") {
-        listItem.className = 'responded-no';
-        checkboxLabel.previousElementSibling.style.display = 'none';
-        inviteeArray[inviteeIndex].isChecked = true;
-        inviteeArray[inviteeIndex].no = true;
-    } else {
-        listItem.className = '';
-        checkboxLabel.nextElementSibling.style.display = '';
-        checkboxLabel.previousElementSibling.style.display = '';
-        inviteeArray[inviteeIndex].isChecked = false;
-        inviteeArray[inviteeIndex].yes = false;
-        inviteeArray[inviteeIndex].no = false;
+    if (checkbox.previousSibling.textContent === "Can't make it" || checkbox.previousSibling.textContent === "I'll be there") {
+        const checkboxLabel = checkbox.parentNode;
+        const li = checkboxLabel.parentNode;
+        const name = li.firstChild.textContent;
+        const checked = checkbox.checked;
+        listItem = checkbox.parentNode.parentNode;
+        inviteeIndex = inviteeArray.indexOf(inviteeArray.find(function(obj) {return obj.name === name;}));
+    
+        if (checked && checkboxLabel.textContent === "I'll be there") {
+            listItem.className = 'responded-yes';
+            checkboxLabel.nextElementSibling.style.display = 'none';
+            inviteeArray[inviteeIndex].isChecked = true;
+            inviteeArray[inviteeIndex].yes = true;
+        } else if (checked && checkboxLabel.textContent === "Can't make it") {
+            listItem.className = 'responded-no';
+            checkboxLabel.previousElementSibling.style.display = 'none';
+            inviteeArray[inviteeIndex].isChecked = true;
+            inviteeArray[inviteeIndex].no = true;
+        } else {
+            listItem.className = '';
+            checkboxLabel.nextElementSibling.style.display = '';
+            checkboxLabel.previousElementSibling.style.display = '';
+            inviteeArray[inviteeIndex].isChecked = false;
+            inviteeArray[inviteeIndex].yes = false;
+            inviteeArray[inviteeIndex].no = false;
+        }
+        localStorage.setItem('recentInvitees', JSON.stringify(inviteeArray));
     }
-    localStorage.setItem('recentInvitees', JSON.stringify(inviteeArray));
 });
 
 ul.addEventListener('click', (e) => {
     const button = e.target;
     if (button.tagName === 'BUTTON') {
         const li = button.parentNode;
+        const name = li.firstChild.textContent;
+        let oldName;
         const checkYes = li.children[1].childNodes[1];
         const checkNo = li.children[2].childNodes[1];
         let isLiChecked;
@@ -217,31 +205,24 @@ ul.addEventListener('click', (e) => {
                 isLiChecked = false;
             }
         }
-        const name = li.firstChild.textContent;
-        const currentObj = inviteeArray.find(function(obj) {return obj === name;});
+        let currentObj;
         const ul = li.parentNode;
         const action = button.textContent;
+        checkForChecked();
         const nameActions = {
             remove: () => {
+                currentObj = inviteeArray.find(function(obj) {return obj.name === name;});
+                inviteeIndex = inviteeArray.indexOf(currentObj);
+                inviteeArray.splice(inviteeIndex, 1);
                 ul.removeChild(li);
-                inviteeArray.splice(inviteeArray.indexOf(currentObj), 1);
-                if (inviteeArray.length > 2) {
-                    inviteeString = '["' + inviteeArray[0] + '",'
-                    for (let i = 1; i < (inviteeArray.length - 1); i++) {
-                        inviteeString += '"' + inviteeArray[i] + '",';
-                    }
-                    inviteeString += '"' + inviteeArray[inviteeArray.length - 1] + '"]';
-                } else if (inviteeArray.length > 1) {
-                    inviteeString = '["' + inviteeArray[0] + '", "' + inviteeArray[1] + '"]';
-                } else {
-                    inviteeString = '["' + inviteeArray[0] + '"]';
-                }
-                localStorage.setItem('recentInvitees', inviteeString);
+                localStorage.setItem('recentInvitees', JSON.stringify(inviteeArray));
 
             },
             edit: () => {
-                inviteeIndex = inviteeArray.indexOf(currentObj);
                 const span = li.firstElementChild;
+                oldName = span.textContent;
+                currentObj = inviteeArray.find(function(obj) {return obj.name === oldName;});
+                inviteeIndex = inviteeArray.indexOf(currentObj);
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.value = span.textContent;
@@ -250,8 +231,6 @@ ul.addEventListener('click', (e) => {
                 button.textContent = 'save';
             },
             save: () => {
-                checkForChecked();
-                // inviteeIndex = inviteeArray.indexOf(currentObj);
                 const input = li.firstElementChild;
                 const newSpan = document.createElement('span');
                 inviteeArray.splice(inviteeIndex, 1, {name: input.value, isChecked: isLiChecked, yes: checkYes.checked, no: checkNo.checked}); 
