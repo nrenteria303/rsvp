@@ -3,10 +3,9 @@ const input = form.querySelector('input');
 const mainDiv = document.querySelector('.main');
 const ul = document.getElementById('invitedList');
 
-const filterYesLabel = document.getElementById('filter-yes-label');
-const filterYesCheckBox = document.getElementById('filter-yes-checkbox');
-const filterNoLabel = document.getElementById('filter-no-label');
-const filterNoCheckBox = document.getElementById('filter-no-checkbox');
+const off = document.getElementById("off-option");
+const yes = document.getElementById("yes-option");
+const no = document.getElementById("no-option");
 
 const clearBtn = document.getElementById('clear-btn');
 
@@ -17,6 +16,33 @@ let inviteeString= '';
 
 
 const lis = ul.children;
+
+function highlightOption() {
+	this.classList.add("highlighted");
+  switch (this.innerHTML) {
+  	case "'yes'":
+        off.classList.remove("highlighted");
+        no.classList.remove("highlighted");
+        filterInvitees('yes');
+        break;
+    case "'no'":
+    	off.classList.remove("highlighted");
+        yes.classList.remove("highlighted");
+        filterInvitees('no');
+        break;
+    case "off":
+    	yes.classList.remove("highlighted");
+        no.classList.remove("highlighted");
+        for (let i = 0; i < lis.length; i++) {
+            lis[i].style.display = '';
+        }
+        break;
+  }
+}
+
+off.addEventListener("click", highlightOption);
+yes.addEventListener("click", highlightOption);
+no.addEventListener("click", highlightOption);
 
 function filterInvitees(response) {
     for (let i = 0; i < lis.length; i++) {
@@ -65,38 +91,6 @@ function saveInviteeString(str) {
         return true;
     }
 }
-
-filterYesCheckBox.addEventListener('change', (e) => {
-    const isChecked = e.target.checked;
-    if (isChecked) {
-        filterInvitees('yes');
-        filterNoCheckBox.style.display = 'none';
-        filterNoLabel.style.display = 'none';
-    } else {
-        for (let i = 0; i < lis.length; i++) {
-            let li = lis[i];
-            li.style.display = '';
-        }
-        filterNoCheckBox.style.display = '';
-        filterNoLabel.style.display = '';
-    }
-});
-
-filterNoCheckBox.addEventListener('change', (e) => {
-    const isChecked = e.target.checked;
-    if (isChecked) {
-        filterInvitees('no');
-        filterYesCheckBox.style.display = 'none';
-        filterYesLabel.style.display = 'none';
-    } else {
-        for (let i = 0; i < lis.length; i++) {
-            let li = lis[i];
-            li.style.display = '';
-        }
-        filterYesCheckBox.style.display = '';
-        filterYesLabel.style.display = '';
-    }
-});
 
 function createLi(text) {
     function createElement(elementName, property, value) {
