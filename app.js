@@ -55,10 +55,6 @@ function filterInvitees(response) {
     }
 }
 
-function checkInviteeName() {
-
-}
-
 function supportsLocalStorage() {
     try {
         return 'localStorage' in window && window['localStorage'] !== null;
